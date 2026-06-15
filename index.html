@@ -43,6 +43,39 @@
             border-right: 1px solid rgba(255,255,255,0.2);
         }
 
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            margin-right: 2rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected {
+            background: #4ade80;
+        }
+
+        .status-dot.disconnected {
+            background: #ef4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .nav-buttons {
             display: flex;
             flex: 1;
@@ -498,6 +531,10 @@
     <!-- Main Navigation -->
     <div class="main-nav">
         <div class="nav-logo">🎯 Centro Integral</div>
+        <div class="status-indicator">
+            <div class="status-dot connected" id="statusDot"></div>
+            <span id="statusText">Conectado</span>
+        </div>
         <div class="nav-buttons">
             <button class="nav-btn active" data-page="testeos">
                 <span>🧪</span> Testeos
@@ -809,14 +846,11 @@
     </div>
 
     <script>
-<<<<<<< HEAD
-=======
         // ===== CREDENCIALES SUPABASE =====
         const SUPABASE_URL = 'https://qwlpwetzvrtpitbntxpv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3bHB3ZXR6dnJ0cGl0Ym50eHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzkxMjQsImV4cCI6MjA5NzExNTEyNH0.YyUMaBdJAxprcs5zERls6h30y1X4MuCkyZcS0iH48Mo';
         // ==================================
 
->>>>>>> cd0c1cd (Integración con Supabase)
         let products = [];
         let campaigns = [];
         let chartInstances = {};
@@ -1131,6 +1165,7 @@
             document.getElementById('productModal').classList.remove('show');
             renderTesteos();
             updateTestStats();
+            showNotification('✅ Producto agregado correctamente');
         }
 
         function updateTestStats() {
@@ -1313,18 +1348,6 @@
             }
         }
 
-<<<<<<< HEAD
-        function saveData() {
-            localStorage.setItem('products', JSON.stringify(products));
-            localStorage.setItem('campaigns', JSON.stringify(campaigns));
-        }
-
-        function loadData() {
-            const savedProducts = localStorage.getItem('products');
-            const savedCampaigns = localStorage.getItem('campaigns');
-            products = savedProducts ? JSON.parse(savedProducts) : [];
-            campaigns = savedCampaigns ? JSON.parse(savedCampaigns) : [];
-=======
         async function saveData() {
             try {
                 console.log('💾 Guardando en Supabase...');
@@ -1397,7 +1420,34 @@
                 products = [];
                 campaigns = [];
             }
->>>>>>> cd0c1cd (Integración con Supabase)
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #667eea;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                font-weight: 600;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function updateConnectionStatus() {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            if (statusDot && statusText) {
+                statusDot.className = 'status-dot connected';
+                statusText.textContent = 'Conectado';
+            }
         }
     </script>
 </body>
