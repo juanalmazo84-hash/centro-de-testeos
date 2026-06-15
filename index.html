@@ -809,6 +809,14 @@
     </div>
 
     <script>
+<<<<<<< HEAD
+=======
+        // ===== CREDENCIALES SUPABASE =====
+        const SUPABASE_URL = 'https://qwlpwetzvrtpitbntxpv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3bHB3ZXR6dnJ0cGl0Ym50eHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzkxMjQsImV4cCI6MjA5NzExNTEyNH0.YyUMaBdJAxprcs5zERls6h30y1X4MuCkyZcS0iH48Mo';
+        // ==================================
+
+>>>>>>> cd0c1cd (Integración con Supabase)
         let products = [];
         let campaigns = [];
         let chartInstances = {};
@@ -1305,6 +1313,7 @@
             }
         }
 
+<<<<<<< HEAD
         function saveData() {
             localStorage.setItem('products', JSON.stringify(products));
             localStorage.setItem('campaigns', JSON.stringify(campaigns));
@@ -1315,6 +1324,80 @@
             const savedCampaigns = localStorage.getItem('campaigns');
             products = savedProducts ? JSON.parse(savedProducts) : [];
             campaigns = savedCampaigns ? JSON.parse(savedCampaigns) : [];
+=======
+        async function saveData() {
+            try {
+                console.log('💾 Guardando en Supabase...');
+                
+                // Eliminar productos viejos
+                for (let p of products) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${p.id}`, {
+                        method: 'DELETE',
+                        headers: { 'apikey': SUPABASE_KEY }
+                    }).catch(e => console.log('No se eliminó producto:', e));
+                }
+                
+                // Insertar productos nuevos
+                if (products.length > 0) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/products`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(products)
+                    });
+                }
+
+                // Eliminar campañas viejas
+                for (let c of campaigns) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/campaigns?id=eq.${c.id}`, {
+                        method: 'DELETE',
+                        headers: { 'apikey': SUPABASE_KEY }
+                    }).catch(e => console.log('No se eliminó campaña:', e));
+                }
+                
+                // Insertar campañas nuevas
+                if (campaigns.length > 0) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/campaigns`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(campaigns)
+                    });
+                }
+
+                console.log('✅ Sincronizado con Supabase');
+            } catch(err) {
+                console.error('❌ Error al guardar:', err);
+            }
+        }
+
+        async function loadData() {
+            try {
+                console.log('📥 Cargando desde Supabase...');
+                
+                const prodRes = await fetch(`${SUPABASE_URL}/rest/v1/products`, {
+                    headers: { 'apikey': SUPABASE_KEY }
+                });
+                products = await prodRes.json() || [];
+
+                const campRes = await fetch(`${SUPABASE_URL}/rest/v1/campaigns`, {
+                    headers: { 'apikey': SUPABASE_KEY }
+                });
+                campaigns = await campRes.json() || [];
+
+                console.log('✅ Datos cargados desde Supabase');
+            } catch(err) {
+                console.error('❌ Error al cargar:', err);
+                products = [];
+                campaigns = [];
+            }
+>>>>>>> cd0c1cd (Integración con Supabase)
         }
     </script>
 </body>
