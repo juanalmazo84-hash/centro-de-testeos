@@ -599,6 +599,99 @@
             </div>
 
             <!-- PRODUCTS -->
+            <!-- FILTROS AVANZADOS -->
+            <div style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%); border: 1px solid #d4af37; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                    <h3 style="color: #1a1a1a; margin: 0; font-size: 16px; font-weight: 700;">🔍 FILTROS AVANZADOS</h3>
+                    <button id="clearFiltersBtn" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px;">Limpiar Filtros</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <!-- FILTRO TIENDA -->
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 0.5rem;">Tienda</label>
+                        <select id="filterStore" style="width: 100%; padding: 0.75rem; border: 1px solid #d4af37; border-radius: 4px; background: white; color: #1a1a1a; font-weight: 600;">
+                            <option value="">Todas las tiendas</option>
+                            <option value="avela">Avela Green</option>
+                            <option value="panda">Panda's Cybermarket</option>
+                        </select>
+                    </div>
+
+                    <!-- FILTRO CATEGORÍA -->
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 0.5rem;">Categoría</label>
+                        <select id="filterCategory" style="width: 100%; padding: 0.75rem; border: 1px solid #d4af37; border-radius: 4px; background: white; color: #1a1a1a; font-weight: 600;">
+                            <option value="">Todas las categorías</option>
+                            <option value="bienestar">🧘 Bienestar</option>
+                            <option value="hogar">🏠 Hogar</option>
+                            <option value="belleza">💄 Belleza</option>
+                            <option value="tecnologia">💻 Tecnología</option>
+                            <option value="ropa">👕 Ropa</option>
+                            <option value="alimentos">🍽️ Alimentos</option>
+                            <option value="deportes">⚽ Deportes</option>
+                            <option value="mascotas">🐕 Mascotas</option>
+                            <option value="educacion">📚 Educación</option>
+                            <option value="viajes">✈️ Viajes</option>
+                            <option value="electrónica">📱 Electrónica</option>
+                            <option value="moda">👗 Moda</option>
+                        </select>
+                    </div>
+
+                    <!-- FILTRO PAÍS -->
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 0.5rem;">País</label>
+                        <select id="filterCountry" style="width: 100%; padding: 0.75rem; border: 1px solid #d4af37; border-radius: 4px; background: white; color: #1a1a1a; font-weight: 600;">
+                            <option value="">Todos los países</option>
+                            <option value="argentina">Argentina</option>
+                            <option value="colombia">Colombia</option>
+                            <option value="mexico">México</option>
+                        </select>
+                    </div>
+
+                    <!-- FILTRO FECHA -->
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 0.5rem;">Desde Fecha</label>
+                        <input type="date" id="filterDateFrom" style="width: 100%; padding: 0.75rem; border: 1px solid #d4af37; border-radius: 4px; background: white; color: #1a1a1a; font-weight: 600;">
+                    </div>
+
+                    <!-- FILTRO FECHA HASTA -->
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 0.5rem;">Hasta Fecha</label>
+                        <input type="date" id="filterDateTo" style="width: 100%; padding: 0.75rem; border: 1px solid #d4af37; border-radius: 4px; background: white; color: #1a1a1a; font-weight: 600;">
+                    </div>
+
+                    <!-- FILTRO UTILIDAD -->
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 0.5rem;">Utilidad Mín (%)</label>
+                        <input type="number" id="filterProfitMin" min="0" max="100" style="width: 100%; padding: 0.75rem; border: 1px solid #d4af37; border-radius: 4px; background: white; color: #1a1a1a; font-weight: 600;" placeholder="0">
+                    </div>
+
+                    <!-- FILTRO UTILIDAD MAX -->
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 0.5rem;">Utilidad Máx (%)</label>
+                        <input type="number" id="filterProfitMax" min="0" max="100" style="width: 100%; padding: 0.75rem; border: 1px solid #d4af37; border-radius: 4px; background: white; color: #1a1a1a; font-weight: 600;" placeholder="100">
+                    </div>
+
+                    <!-- FILTRO ESTADO -->
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 0.5rem;">Estado</label>
+                        <select id="filterStatus" style="width: 100%; padding: 0.75rem; border: 1px solid #d4af37; border-radius: 4px; background: white; color: #1a1a1a; font-weight: 600;">
+                            <option value="">Todos los estados</option>
+                            <option value="registered">Registrado</option>
+                            <option value="pending">Próximo</option>
+                            <option value="inProgress">En Progreso</option>
+                            <option value="hold">En Pausa</option>
+                            <option value="finalizado">Finalizado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTADOR DE RESULTADOS -->
+            <div id="filterResults" style="margin-bottom: 1rem; font-size: 14px; color: #d4af37; font-weight: 600; text-align: center;">
+                Mostrando <span id="resultsCount">0</span> productos
+            </div>
+
             <div class="products-grid" id="testUnprogrammedList"></div>
             <div class="products-grid" id="testUpcomingList" style="display: none;"></div>
             <div class="products-grid" id="testAllList" style="display: none;"></div>
@@ -882,6 +975,52 @@
         // El evento de submit del formulario se maneja abajo
 
         // El evento de submit del formulario se maneja abajo en la sección de event listeners
+
+        function applyFilters() {
+            const filterStore = document.getElementById('filterStore').value;
+            const filterCategory = document.getElementById('filterCategory').value;
+            const filterCountry = document.getElementById('filterCountry').value;
+            const filterDateFrom = document.getElementById('filterDateFrom').value;
+            const filterDateTo = document.getElementById('filterDateTo').value;
+            const filterProfitMin = document.getElementById('filterProfitMin').value;
+            const filterProfitMax = document.getElementById('filterProfitMax').value;
+            const filterStatus = document.getElementById('filterStatus').value;
+
+            let filtered = products.filter(p => {
+                // Filtro por tienda
+                if (filterStore && p.store !== filterStore) return false;
+                
+                // Filtro por categoría
+                if (filterCategory && p.category !== filterCategory) return false;
+                
+                // Filtro por país
+                if (filterCountry && p.country !== filterCountry) return false;
+                
+                // Filtro por fecha desde
+                if (filterDateFrom && p.testDate && new Date(p.testDate) < new Date(filterDateFrom)) return false;
+                
+                // Filtro por fecha hasta
+                if (filterDateTo && p.testDate && new Date(p.testDate) > new Date(filterDateTo)) return false;
+                
+                // Filtro por utilidad mínima
+                if (filterProfitMin && p.profit < parseFloat(filterProfitMin)) return false;
+                
+                // Filtro por utilidad máxima
+                if (filterProfitMax && p.profit > parseFloat(filterProfitMax)) return false;
+                
+                // Filtro por estado
+                if (filterStatus && p.status !== filterStatus) return false;
+                
+                return true;
+            });
+
+            // Actualizar contador de resultados
+            document.getElementById('resultsCount').textContent = filtered.length;
+
+            // Mostrar productos filtrados en la lista "todos"
+            const testAllList = document.getElementById('testAllList');
+            testAllList.innerHTML = filtered.length === 0 ? '<div class="empty-state"><p>No se encontraron productos con estos filtros</p></div>' : filtered.map(p => createProductCard(p)).join('');
+        }
 
         function renderTesteos() {
             const unprogrammed = products.filter(p => !p.testDate);
@@ -1205,6 +1344,29 @@
 
         // CAMPAIGN FORM
         document.getElementById('campaignForm').addEventListener('submit', submitCampaignForm);
+
+        // FILTROS AVANZADOS
+        document.getElementById('filterStore').addEventListener('change', applyFilters);
+        document.getElementById('filterCategory').addEventListener('change', applyFilters);
+        document.getElementById('filterCountry').addEventListener('change', applyFilters);
+        document.getElementById('filterDateFrom').addEventListener('change', applyFilters);
+        document.getElementById('filterDateTo').addEventListener('change', applyFilters);
+        document.getElementById('filterProfitMin').addEventListener('change', applyFilters);
+        document.getElementById('filterProfitMax').addEventListener('change', applyFilters);
+        document.getElementById('filterStatus').addEventListener('change', applyFilters);
+
+        // LIMPIAR FILTROS
+        document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+            document.getElementById('filterStore').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterCountry').value = '';
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            document.getElementById('filterProfitMin').value = '';
+            document.getElementById('filterProfitMax').value = '';
+            document.getElementById('filterStatus').value = '';
+            applyFilters();
+        });
 
         function submitCampaignForm(e) {
             e.preventDefault();
