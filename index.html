@@ -879,36 +879,9 @@
         });
 
         // PRODUCT FORM
-        document.getElementById('productForm').addEventListener('submit', submitProductForm);
+        // El evento de submit del formulario se maneja abajo
 
-        function submitProductForm(e) {
-            e.preventDefault();
-            
-            const product = {
-                id: Date.now(),
-                name: document.getElementById('productName').value,
-                description: document.getElementById('productDescription').value || '',
-                category: document.getElementById('productCategory').value,
-                store: document.getElementById('productStore').value,
-                country: document.getElementById('productCountry').value,
-                profit: parseFloat(document.getElementById('productProfit').value) || 0,
-                ticketType: document.getElementById('productTicketType').value,
-                testingTime: document.getElementById('productTestingTime').value || '',
-                testDate: document.getElementById('productDate').value || '',
-                status: document.getElementById('productStatus').value || 'registered',
-                image: document.getElementById('productImage').dataset.base64 || null,
-                feedback: [],
-                createdAt: new Date().toISOString()
-            };
-
-            products.unshift(product);
-            saveData();
-            document.getElementById('productModal').classList.remove('show');
-            document.getElementById('productForm').reset();
-            renderTesteos();
-            updateTestStats();
-            showNotification('✅ Producto agregado correctamente');
-        }
+        // El evento de submit del formulario se maneja abajo en la sección de event listeners
 
         function renderTesteos() {
             const unprogrammed = products.filter(p => !p.testDate);
@@ -962,7 +935,8 @@
                             ${product.profit ? `📊 Utilidad: ${product.profit}% • ` : ''}${product.ticketType}
                         </div>
                         <div class="card-actions">
-                            <button class="card-btn" onclick="deleteProduct(${product.id})">🗑️ Eliminar</button>
+                            <button class="card-btn" onclick="editProduct(${product.id})" style="border-color: #d4af37; color: #d4af37;">✏️ Editar</button>
+                            <button class="card-btn danger" onclick="deleteProduct(${product.id})">🗑️ Eliminar</button>
                         </div>
                     </div>
                 </div>
@@ -975,6 +949,97 @@
             renderTesteos();
             updateTestStats();
         }
+
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            // Cargar datos en el formulario
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productCategory').value = product.category || '';
+            document.getElementById('productStore').value = product.store;
+            document.getElementById('productCountry').value = product.country;
+            document.getElementById('productProfit').value = product.profit || '';
+            document.getElementById('productTicketType').value = product.ticketType;
+            document.getElementById('productTestingTime').value = product.testingTime || '';
+            document.getElementById('productDate').value = product.testDate || '';
+            document.getElementById('productStatus').value = product.status;
+
+            // Mostrar imagen si existe
+            if (product.image) {
+                document.getElementById('productImage').dataset.base64 = product.image;
+                document.getElementById('imagePreview').innerHTML = `
+                    <div style="position: relative; display: inline-block;">
+                        <img src="${product.image}" style="max-width: 100%; border-radius: 8px; margin-top: 10px; max-height: 200px;">
+                        <div style="font-size: 12px; color: #d4af37; margin-top: 8px; text-align: center; font-weight: 600;">✓ Imagen lista para guardar</div>
+                    </div>
+                `;
+            }
+
+            // Cambiar el título del modal y el botón
+            document.querySelector('#productModal .modal-header h3').textContent = 'Editar Producto';
+            const submitBtn = document.querySelector('#productForm button[type="submit"]');
+            submitBtn.textContent = 'GUARDAR CAMBIOS';
+
+            // Almacenar el ID del producto siendo editado
+            document.getElementById('productForm').dataset.editingId = id;
+
+            // Abrir modal
+            document.getElementById('productModal').classList.add('show');
+        }
+
+        // Modificar submitProductForm para manejar edición
+        const originalSubmitProductForm = submitProductForm;
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const editingId = this.dataset.editingId;
+            
+            const productData = {
+                name: document.getElementById('productName').value,
+                description: document.getElementById('productDescription').value || '',
+                category: document.getElementById('productCategory').value,
+                store: document.getElementById('productStore').value,
+                country: document.getElementById('productCountry').value,
+                profit: parseFloat(document.getElementById('productProfit').value) || 0,
+                ticketType: document.getElementById('productTicketType').value,
+                testingTime: document.getElementById('productTestingTime').value || '',
+                testDate: document.getElementById('productDate').value || '',
+                status: document.getElementById('productStatus').value || 'registered',
+                image: document.getElementById('productImage').dataset.base64 || null
+            };
+
+            if (editingId) {
+                // EDITAR producto existente
+                const product = products.find(p => p.id == editingId);
+                if (product) {
+                    Object.assign(product, productData);
+                    showNotification('✅ Producto actualizado correctamente');
+                }
+                // Limpiar el ID de edición
+                delete this.dataset.editingId;
+            } else {
+                // CREAR nuevo producto
+                const newProduct = {
+                    id: Date.now(),
+                    ...productData,
+                    feedback: [],
+                    createdAt: new Date().toISOString()
+                };
+                products.unshift(newProduct);
+                showNotification('✅ Producto agregado correctamente');
+            }
+
+            saveData();
+            document.getElementById('productModal').classList.remove('show');
+            document.getElementById('productForm').reset();
+            document.getElementById('imagePreview').innerHTML = '';
+            document.querySelector('#productModal .modal-header h3').textContent = 'Agregar Nuevo Producto';
+            document.querySelector('#productForm button[type="submit"]').textContent = 'AGREGAR PRODUCTO';
+            renderTesteos();
+            updateTestStats();
+        });
 
         function updateTestStats() {
             const total = products.length;
