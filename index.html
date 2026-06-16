@@ -1076,8 +1076,12 @@
         const dropZone = document.getElementById('dropZone');
         const imageInput = document.getElementById('productImage');
 
-        // Click para seleccionar archivo
-        dropZone.addEventListener('click', () => imageInput.click());
+        // Click para seleccionar archivo - SIN PROPAGACIÓN
+        dropZone.addEventListener('click', (e) => {
+            if (e.target !== imageInput) {
+                imageInput.click();
+            }
+        });
 
         // Drag and Drop
         dropZone.addEventListener('dragover', (e) => {
