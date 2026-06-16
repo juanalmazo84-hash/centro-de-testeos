@@ -1855,8 +1855,10 @@ cropperjs/dist/cropper.css:
 // SINCRONIZACIÓN EN TIEMPO REAL CON SUPABASE
 // ═══════════════════════════════════════════════════════════════
 
-const SUPABASE_URL = 'https://qwlpwetzvrtpitbntxpv.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3bHB3ZXR6dnJ0cGl0Ym50eHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzkxMjQsImV4cCI6MjA5NzExNTEyNH0.YyUMaBdJAxprcs5zERls6h30y1X4MuCkyZcS0iH48Mo';
+if (typeof SUPABASE_URL === 'undefined') {
+    window.SUPABASE_URL = 'https://qwlpwetzvrtpitbntxpv.supabase.co';
+    window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3bHB3ZXR6dnJ0cGl0Ym50eHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzkxMjQsImV4cCI6MjA5NzExNTEyNH0.YyUMaBdJAxprcs5zERls6h30y1X4MuCkyZcS0iH48Mo';
+}
 
 let supabase = null;
 let connected = false;
@@ -1865,7 +1867,7 @@ let userName = localStorage.getItem('userName') || 'Usuario ' + sessionId.substr
 
 async function initializeSupabase() {
     try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        supabase = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
         const { data, error } = await supabase.from('dashboard').select('*').limit(1);
         if (error) throw error;
         
