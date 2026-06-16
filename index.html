@@ -1885,16 +1885,25 @@ async function initializeSupabase() {
 function setupRealtimeListeners() {
     if (!connected) return;
     
+    console.log('📡 Iniciando listeners realtime...');
+    
     // Escuchar cambios en tiempo real
-    supabase
-        .channel('dashboard-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'dashboard' }, 
+    const subscription = supabase
+        .channel('public:dashboard')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'dashboard' },
             (payload) => {
-                console.log('📡 Cambio detectado:', payload);
-                location.reload(); // Recargar para ver cambios
+                console.log('🔄 Cambio detectado en dashboard:', payload);
+                // Recargar después de 500ms para ver el cambio
+                setTimeout(() => location.reload(), 500);
             }
         )
-        .subscribe();
+        .subscribe((status) => {
+            console.log('📡 Realtime subscription status:', status);
+        });
+    
+    console.log('✅ Listeners configurados');
 }
 
 function registerUser() {
