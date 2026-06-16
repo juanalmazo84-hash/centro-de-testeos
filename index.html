@@ -1849,80 +1849,91 @@ cropperjs/dist/cropper.css:
             </div>
             <button class="bar-close" aria-label="Close">×</button>
         </div></template></fatkun-drop-panel></html>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ═══════════════════════════════════════════════════════════════
-// SUPABASE - Guardar productos automáticamente
-// ═══════════════════════════════════════════════════════════════
-
-const SUPABASE_URL = 'https://qwlpwetzvrtpitbntxpv.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3bHB3ZXR6dnJ0cGl0Ym50eHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzkxMjQsImV4cCI6MjA5NzExNTEyNH0.YyUMaBdJAxprcs5zERls6h30y1X4MuCkyZcS0iH48Mo';
-
-let supabase = null;
-let productsFromDB = new Set();
-
-async function initSupabase() {
-    try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('✅ Supabase inicializado');
-        
-        // Cargar productos existentes de Supabase
-        const { data } = await supabase.from('products').select('*');
-        if (data) {
-            data.forEach(p => productsFromDB.add(JSON.stringify(p)));
-            console.log('📦 Productos cargados de Supabase:', data.length);
-        }
-    } catch (error) {
-        console.error('⚠️ Error Supabase:', error);
-    }
-}
-
-// Interceptar cuando se agrega un producto
-async function saveProductToSupabase(productName) {
-    if (!supabase) return;
+const app = {
+    supabase: null,
     
-    try {
-        const { data, error } = await supabase
-            .from('products')
-            .insert([{ nombre: productName, created_at: new Date() }])
-            .select();
-        
-        if (error) throw error;
-        console.log('✅ Producto guardado en Supabase:', productName);
-    } catch (error) {
-        console.error('❌ Error guardando producto:', error);
-    }
-}
-
-// Monitorear cambios en el DOM para detectar nuevos productos
-const observerConfig = { childList: true, subtree: true };
-const observer = new MutationObserver(() => {
-    // Buscar elementos que parezcan productos (adaptarse según el HTML)
-    const productElements = document.querySelectorAll('[data-product], .product, .item-producto');
-    productElements.forEach(el => {
-        const productText = el.textContent?.trim();
-        if (productText && !productsFromDB.has(productText)) {
-            productsFromDB.add(productText);
-            saveProductToSupabase(productText);
+    async init() {
+        try {
+            const { createClient } = window.supabase;
+            this.supabase = createClient(
+                'https://qwlpwetzvrtpitbntxpv.supabase.co',
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3bHB3ZXR6dnJ0cGl0Ym50eHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzkxMjQsImV4cCI6MjA5NzExNTEyNH0.YyUMaBdJAxprcs5zERls6h30y1X4MuCkyZcS0iH48Mo'
+            );
+            
+            console.log('✅ Supabase conectado');
+            this.suscribirse();
+            this.mostrarEstado();
+        } catch (error) {
+            console.error('❌ Error Supabase:', error);
         }
-    });
-});
-
-// Auto-reload cada 1 minuto para sincronizar
-console.log('✅ Sincronización habilitada - recarga cada 60 segundos');
-setInterval(() => location.reload(), 60000);
+    },
+    
+    suscribirse() {
+        if (this.supabase) {
+            // Escuchar cambios en products
+            this.supabase
+                .channel('cambios-products')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'products' },
+                    () => {
+                        console.log('🔄 Cambio en products - recargando...');
+                        location.reload();
+                    }
+                )
+                .subscribe();
+            
+            // Escuchar cambios en campaigns
+            this.supabase
+                .channel('cambios-campaigns')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'campaigns' },
+                    () => {
+                        console.log('🔄 Cambio en campaigns - recargando...');
+                        location.reload();
+                    }
+                )
+                .subscribe();
+            
+            // Escuchar cambios en dashboard
+            this.supabase
+                .channel('cambios-dashboard')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'dashboard' },
+                    () => {
+                        console.log('🔄 Cambio en dashboard - recargando...');
+                        location.reload();
+                    }
+                )
+                .subscribe();
+        }
+    },
+    
+    mostrarEstado() {
+        const estado = document.createElement('div');
+        estado.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 16px;
+            background: #28a745;
+            color: white;
+            border-radius: 5px;
+            font-weight: 600;
+            z-index: 10000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-size: 14px;
+        `;
+        estado.innerHTML = '🟢 Sincronizado en Tiempo Real';
+        document.body.appendChild(estado);
+    }
+};
 
 // Inicializar cuando esté listo
-document.addEventListener('DOMContentLoaded', async () => {
-    await initSupabase();
-    observer.observe(document.body, observerConfig);
-});
-
-// Inicializar también si el documento ya está listo
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSupabase);
+    document.addEventListener('DOMContentLoaded', () => app.init());
 } else {
-    initSupabase();
-    observer.observe(document.body, observerConfig);
+    app.init();
 }
 </script>
