@@ -1906,7 +1906,11 @@ function registerUser() {
     supabase.from('usuarios').insert([{
         session_id: sessionId,
         nombre: userName
-    }]).catch(err => console.log('Usuario ya registrado'));
+    }]).then(() => {
+        console.log('✅ Usuario registrado');
+    }).catch(err => {
+        console.log('Usuario ya registrado o error menor');
+    });
 }
 
 function showSyncStatus() {
