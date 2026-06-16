@@ -1849,8 +1849,80 @@ cropperjs/dist/cropper.css:
             </div>
             <button class="bar-close" aria-label="Close">×</button>
         </div></template></fatkun-drop-panel></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
 <script>
-// Auto-reload cada 1 minuto para sincronizar datos
+// ═══════════════════════════════════════════════════════════════
+// SUPABASE - Guardar productos automáticamente
+// ═══════════════════════════════════════════════════════════════
+
+const SUPABASE_URL = 'https://qwlpwetzvrtpitbntxpv.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3bHB3ZXR6dnJ0cGl0Ym50eHB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzkxMjQsImV4cCI6MjA5NzExNTEyNH0.YyUMaBdJAxprcs5zERls6h30y1X4MuCkyZcS0iH48Mo';
+
+let supabase = null;
+let productsFromDB = new Set();
+
+async function initSupabase() {
+    try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase inicializado');
+        
+        // Cargar productos existentes de Supabase
+        const { data } = await supabase.from('products').select('*');
+        if (data) {
+            data.forEach(p => productsFromDB.add(JSON.stringify(p)));
+            console.log('📦 Productos cargados de Supabase:', data.length);
+        }
+    } catch (error) {
+        console.error('⚠️ Error Supabase:', error);
+    }
+}
+
+// Interceptar cuando se agrega un producto
+async function saveProductToSupabase(productName) {
+    if (!supabase) return;
+    
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .insert([{ nombre: productName, created_at: new Date() }])
+            .select();
+        
+        if (error) throw error;
+        console.log('✅ Producto guardado en Supabase:', productName);
+    } catch (error) {
+        console.error('❌ Error guardando producto:', error);
+    }
+}
+
+// Monitorear cambios en el DOM para detectar nuevos productos
+const observerConfig = { childList: true, subtree: true };
+const observer = new MutationObserver(() => {
+    // Buscar elementos que parezcan productos (adaptarse según el HTML)
+    const productElements = document.querySelectorAll('[data-product], .product, .item-producto');
+    productElements.forEach(el => {
+        const productText = el.textContent?.trim();
+        if (productText && !productsFromDB.has(productText)) {
+            productsFromDB.add(productText);
+            saveProductToSupabase(productText);
+        }
+    });
+});
+
+// Auto-reload cada 1 minuto para sincronizar
 console.log('✅ Sincronización habilitada - recarga cada 60 segundos');
 setInterval(() => location.reload(), 60000);
+
+// Inicializar cuando esté listo
+document.addEventListener('DOMContentLoaded', async () => {
+    await initSupabase();
+    observer.observe(document.body, observerConfig);
+});
+
+// Inicializar también si el documento ya está listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSupabase);
+} else {
+    initSupabase();
+    observer.observe(document.body, observerConfig);
+}
 </script>
