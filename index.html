@@ -1945,8 +1945,9 @@ function showSyncStatus() {
     document.body.appendChild(status);
 }
 
-// Inicializar cuando esté listo
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initializeSupabase, 500);
-});
+// Recargar página cada 5 segundos para sincronizar cambios
+setInterval(() => {
+    console.log('🔄 Recargando para sincronizar...');
+    location.reload();
+}, 5000);
 </script>
