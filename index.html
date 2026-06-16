@@ -1863,10 +1863,35 @@ const app = {
             );
             
             console.log('✅ Supabase conectado');
+            await this.cargarDatos();
             this.suscribirse();
             this.mostrarEstado();
         } catch (error) {
             console.error('❌ Error Supabase:', error);
+        }
+    },
+    
+    async cargarDatos() {
+        try {
+            // Cargar productos
+            const { data: products } = await this.supabase
+                .from('products')
+                .select('*');
+            console.log('📦 Productos cargados:', products?.length);
+            
+            // Cargar campaigns
+            const { data: campaigns } = await this.supabase
+                .from('campaigns')
+                .select('*');
+            console.log('📢 Campaigns cargados:', campaigns?.length);
+            
+            // Cargar dashboard
+            const { data: dashboard } = await this.supabase
+                .from('dashboard')
+                .select('*');
+            console.log('📊 Dashboard cargado:', dashboard?.length);
+        } catch (error) {
+            console.error('Error cargando datos:', error);
         }
     },
     
